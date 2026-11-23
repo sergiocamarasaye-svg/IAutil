@@ -11,8 +11,9 @@ new FormData(f).forEach(function(v,k){d[k]=v});if(d._honey)return;
 if(!d.nombre.trim()||!d.mensaje.trim()||!f.email.checkValidity()){o.textContent='Rellena nombre, un email válido y el mensaje.';return}
 d._subject='Mensaje desde IA ÚTIL';bt.disabled=true;o.textContent='Enviando...';
 fetch('https://formsubmit.co/ajax/aprendeconiautil@gmail.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(d)})
-.then(function(r){return r.json()}).then(function(j){if(j.success===true||j.success==='true'){o.textContent='¡Mensaje enviado! Gracias por escribirnos.';f.reset()}else throw 0})
-.catch(function(){o.textContent='No se ha podido enviar. Escríbenos a aprendeconiautil@gmail.com'}).then(function(){bt.disabled=false})})}
+.then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}return{s:r.status,j:j}})})
+.then(function(x){if(x.j&&(x.j.success===true||x.j.success==='true')){o.textContent='¡Mensaje enviado! Gracias por escribirnos.';f.reset()}else{console.error('FormSubmit rechazó el envío',x);o.textContent='El servicio no ha aceptado el mensaje'+(x.j&&x.j.message?': '+x.j.message:' (código '+x.s+')')+'. Escríbenos a aprendeconiautil@gmail.com'}})
+.catch(function(err){console.error('No se pudo contactar con FormSubmit',err);o.textContent=(location.protocol==='file:'?'El formulario no puede enviarse si abres la web como archivo en tu ordenador; funciona desde la web publicada. ':'No se ha podido contactar con el servicio (conexión, bloqueador de anuncios o bloqueo del navegador). ')+'Escríbenos a aprendeconiautil@gmail.com'}).then(function(){bt.disabled=false})})}
 /* Consentimiento: nada publicitario se carga sin aceptación. Ver README para la CMP certificada (TCF) */
 var AD='ca-pub-XXXXXXXXXXXXXXXX',c=document.getElementById('ck');if(!c)return;
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
